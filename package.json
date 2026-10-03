@@ -1,0 +1,12 @@
+{
+  "name": "aegis-chat",
+  "version": "1.0.0",
+  "description": "Aegis - Clean, Private End-to-End Encrypted Chat",
+  "scripts": {
+    "install-client": "npm install --prefix client",
+    "install-server": "npm install --prefix server",
+    "build-client": "npm run build --prefix client",
+    "postinstall": "npm run install-server && npm run install-client && npm run build-client",
+    "start": "node server/server.js"
+  }
+}
