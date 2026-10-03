@@ -689,7 +689,7 @@ const candidateDistPaths = [
 ];
 const clientDistPath = candidateDistPaths.find(p => fs.existsSync(p));
 if (clientDistPath) {
-  console.log('Serving client static build from:', clientDistPath);
+  console.log('Serving client static build from disk:', clientDistPath);
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/ws')) {
@@ -698,7 +698,15 @@ if (clientDistPath) {
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 } else {
-  console.warn('[WARN] No client/dist directory found. Ensure client was built.');
+  // Automatic Zero-Config Fallback: Embedded Production Client
+  // Ensures the app works 100% on Render even if GitHub web uploader skips the dist folder!
+  try {
+    const embedded = require('./embedded-app');
+    console.log('Serving embedded production client app (Zero-Config Active)');
+    embedded.registerStaticRoutes(app);
+  } catch (err) {
+    console.warn('[WARN] No client/dist or embedded-app found:', err.message);
+  }
 }
 
 const PORT = process.env.PORT || 4000;
